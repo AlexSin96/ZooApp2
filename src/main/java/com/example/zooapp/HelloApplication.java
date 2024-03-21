@@ -274,35 +274,7 @@ public class HelloApplication extends Application
         }
     }
 
-    // Method to check if a string is in the YYYY-MM-DD format
-    private boolean isValidDateFormat(String date) {
-        String dateFormatRegex = "\\d{4}-\\d{2}-\\d{2}";
-        return date.matches(dateFormatRegex);
-    }
-
-    // Method to check if a number ID is valid
-    private boolean isValidId(String id) {
-        // Check if id field is empty
-        if (id.isEmpty())
-        {
-            DisplayArea.appendText("Please enter an ID number.\n");
-            return false;
-        }
-
-        try {
-            // Check if id is a valid integer
-            int IdValue = Integer.parseInt(id);
-        }
-        catch (NumberFormatException e)
-        {
-            // Handle the case where id is not a valid integer
-            DisplayArea.appendText("ID must be valid integer.\n");
-            return false;
-        }
-
-        return true;
-    }
-
+    //Method for delete button
     private void deleteClicked()
     {
         DisplayArea.clear();
@@ -527,6 +499,37 @@ public class HelloApplication extends Application
             }
         }
     }
+
+    // Method to check if a string is in the YYYY-MM-DD format
+    private boolean isValidDateFormat(String date) {
+        String dateFormatRegex = "\\d{4}-\\d{2}-\\d{2}";
+        return date.matches(dateFormatRegex);
+    }
+
+    // Method to check if a number ID is valid
+    private boolean isValidId(String id) {
+        // Check if id field is empty
+        if (id.isEmpty())
+        {
+            DisplayArea.appendText("Please enter an ID number.\n");
+            return false;
+        }
+
+        try {
+            // Check if id is a valid integer
+            int IdValue = Integer.parseInt(id);
+        }
+        catch (NumberFormatException e)
+        {
+            // Handle the case where id is not a valid integer
+            DisplayArea.appendText("ID must be valid integer.\n");
+            return false;
+        }
+
+        return true;
+    }
+
+
 
 
     public static void main(String[] args)

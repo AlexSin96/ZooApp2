@@ -7,5 +7,5 @@ public class Common
     //static final String url = "jdbc:oracle:thin:@ 199.212.26.208:1521:SQLD";
     static final String user = "system";
     //static final String user = "COMP122_M23_za_57";
-    static final String password = "Centennial";
+    static final String password = "Centennial1*";
 }
