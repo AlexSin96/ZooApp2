@@ -1,27 +1,20 @@
 package com.example.zooapp;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 
-public class UserApplication extends Application {
+public class EmployeeApplication extends Application {
     private TextField EmpName, EmpTitle, EmpId;
     private TextArea DisplayArea;
     private JTable resultTable;
@@ -60,7 +53,7 @@ public class UserApplication extends Application {
         MenuItem animalMenuItem = new MenuItem("Animal");
         MenuItem foodMenuItem = new MenuItem("Food");
         MenuItem feedingMenuItem = new MenuItem("Feeding");
-        MenuItem userMenuItem = new MenuItem("User");
+        MenuItem employeeMenuItem = new MenuItem("Employee");
 
         // Create event handlers for menu items
         animalMenuItem.setOnAction(event -> {
@@ -72,19 +65,19 @@ public class UserApplication extends Application {
         feedingMenuItem.setOnAction(event -> {
             primaryStage.setScene(new Scene(new FeedingApplication().createContent(primaryStage)));
         });
-        userMenuItem.setOnAction(event -> {
-            primaryStage.setScene(new Scene(new UserApplication().createContent(primaryStage)));
+        employeeMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new EmployeeApplication().createContent(primaryStage)));
         });
 
         // Create menus and add menu items to them
         Menu animalMenu = new Menu("Animal", null, animalMenuItem);
         Menu foodMenu = new Menu("Food", null, foodMenuItem);
         Menu feedingMenu = new Menu("Feeding", null, feedingMenuItem);
-        Menu userMenu = new Menu("User", null, userMenuItem);
+        Menu employeeMenu = new Menu("Employee", null, employeeMenuItem);
 
         // Create menu bar and add menus to it
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu, userMenu);
+        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu, employeeMenu);
 
 
         //Food Information
@@ -101,7 +94,7 @@ public class UserApplication extends Application {
         pane.add(EmpId, 3, 0);
 
         // Create update button
-        Button updateButton = new Button("    Update User    ");
+        Button updateButton = new Button("    Update Employee    ");
         pane.add(updateButton, 4, 0);
         updateButton.setOnAction(event ->
         {
@@ -109,14 +102,14 @@ public class UserApplication extends Application {
         });
 
         // Create delete button
-        Button deleteButton = new Button("    Delete User    ");
+        Button deleteButton = new Button("    Delete Employee    ");
         pane.add(deleteButton, 4, 1);
         deleteButton.setOnAction(event ->
         {
             deleteClicked();
         });
 
-        Button createButton = new Button("     Create User     ");
+        Button createButton = new Button("     Create new employee     ");
         pane.add(createButton, 3, 8);
         createButton.setOnAction(event ->
         {
@@ -138,7 +131,7 @@ public class UserApplication extends Application {
 
 
         // Create main pane
-        Label boldLabel1 = new Label("   User Information:");
+        Label boldLabel1 = new Label("   Employee Information:");
         boldLabel1.setFont(Font.font("Arial", FontWeight.BOLD, 12));
         mainpane.add(menuBar, 0, 0);
         mainpane.add(boldLabel1, 0, 1);
@@ -243,18 +236,18 @@ public class UserApplication extends Application {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             connection.setAutoCommit(false); // Start transaction
 
-//            // Insert into Food table
-//            String playerQuery = "INSERT INTO FOOD VALUES(Food_Seq.NEXTVAL, ?, ?)";
-//            try (PreparedStatement foodStatement = connection.prepareStatement(playerQuery)) {
-//                foodStatement.setString(1, name);
-//                foodStatement.setInt(2, quantityValue);
-//                foodStatement.executeUpdate();
+            // Insert into Food table
+            String playerQuery = "INSERT INTO USER VALUES(User_Seq.NEXTVAL, ?, ?)";
+//            try (PreparedStatement userStatement = connection.prepareStatement(playerQuery)) {
+//                userStatement.setString(1, name);
+//                userStatement.setInt(2, EmpTitle);
+//                userStatement.executeUpdate();
 //            }
 
             // Commit the transaction
             connection.commit();
 
-            DisplayArea.appendText("New user record created successfully.");
+            DisplayArea.appendText("New employee record created successfully.");
         } catch (SQLException e) {
             DisplayArea.appendText("Error creating new record: " + e.getMessage());
         }
@@ -300,7 +293,7 @@ public class UserApplication extends Application {
         {
             String userId = EmpId.getText();
             int userIdValue = Integer.parseInt(userId);
-            DisplayArea.appendText("Selected user id for deletion is: " + userIdValue + "\n");
+            DisplayArea.appendText("Selected employee id for deletion is: " + userIdValue + "\n");
 
             // Check if the food ID exists in the player table
             try (Connection connection = DriverManager.getConnection(url, user, password))
@@ -315,11 +308,11 @@ public class UserApplication extends Application {
 
                 if (rowCount == 0)
                 {
-                    DisplayArea.appendText("User Id does not exists.\n");
+                    DisplayArea.appendText("Employee Id does not exists.\n");
                 }
                 else
                 {
-                    DisplayArea.appendText("User Id exists. \n");
+                    DisplayArea.appendText("Employee Id exists. \n");
                 }
 
             } catch (SQLException e) {
@@ -337,9 +330,9 @@ public class UserApplication extends Application {
                     int rowsUpdated = preparedStatement.executeUpdate();
 
                     if (rowsUpdated > 0) {
-                        DisplayArea.appendText("User deletion successful.\n");
+                        DisplayArea.appendText("Employee deletion successful.\n");
                     } else {
-                        DisplayArea.appendText("User deletion unsuccessful.\n");
+                        DisplayArea.appendText("Employee deletion unsuccessful.\n");
                     }
                 }
 
@@ -364,9 +357,9 @@ public class UserApplication extends Application {
 
         if(testId)
         {
-            String foodId = EmpId.getText();
-            int foodIdValue = Integer.parseInt(foodId);
-            DisplayArea.appendText("Selected User id for update is: " + foodIdValue + "\n");
+            String empId = EmpId.getText();
+            int empIdValue = Integer.parseInt(empId);
+            DisplayArea.appendText("Selected Employee id for update is: " + empIdValue + "\n");
 
             // Check if the food ID exists in the player table
             try (Connection connection = DriverManager.getConnection(url, user, password))
@@ -374,18 +367,18 @@ public class UserApplication extends Application {
                 connection.setAutoCommit(false);
                 String selectQuery = "SELECT COUNT(*) FROM user WHERE user_id = ?";
                 PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
-                selectStatement.setInt(1, foodIdValue);
+                selectStatement.setInt(1, empIdValue);
                 ResultSet resultSet = selectStatement.executeQuery();
                 resultSet.next();
                 int rowCount = resultSet.getInt(1);
 
                 if (rowCount == 0)
                 {
-                    DisplayArea.appendText("User Id does not exists.\n");
+                    DisplayArea.appendText("Employee Id does not exists.\n");
                 }
                 else
                 {
-                    DisplayArea.appendText("User Id exists. \n");
+                    DisplayArea.appendText("Employee Id exists. \n");
                 }
 
             } catch (SQLException e) {
@@ -399,17 +392,17 @@ public class UserApplication extends Application {
             {
                 try (Connection connection = DriverManager.getConnection(url, user, password))
                 {
-                    String updateQuery = "UPDATE food SET user_name = ? WHERE user_id = ?";
+                    String updateQuery = "UPDATE User SET user_name = ? WHERE user_id = ?";
                     try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
                         preparedStatement.setString(1, name);
-                        preparedStatement.setInt(2, foodIdValue);
+                        preparedStatement.setInt(2, empIdValue);
 
                         int rowsUpdated = preparedStatement.executeUpdate();
 
                         if (rowsUpdated > 0) {
-                            DisplayArea.appendText("User name update successful.\n");
+                            DisplayArea.appendText("Employee name update successful.\n");
                         } else {
-                            DisplayArea.appendText("User name update unsuccessful.\n");
+                            DisplayArea.appendText("Employee name update unsuccessful.\n");
                         }
                     }
 
@@ -421,7 +414,7 @@ public class UserApplication extends Application {
                 }
             }
 
-            //Update query for Quantity
+            //Update query for Employee Title
             String empTitle = EmpTitle.getText();
             if (!empTitle.isEmpty())
             {
@@ -431,14 +424,14 @@ public class UserApplication extends Application {
                     String updateQuery = "UPDATE user SET user_type = ? WHERE user_id = ?";
                     try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
                         preparedStatement.setString(1, empTitle);
-                        preparedStatement.setString(2, empTitle);
+                        preparedStatement.setInt(2, empIdValue);
 
                         int rowsUpdated = preparedStatement.executeUpdate();
 
                         if (rowsUpdated > 0) {
-                            DisplayArea.appendText("User update successful.\n");
+                            DisplayArea.appendText("Employee update successful.\n");
                         } else {
-                            DisplayArea.appendText("User update unsuccessful.\n");
+                            DisplayArea.appendText("Employee update unsuccessful.\n");
                         }
                     }
 

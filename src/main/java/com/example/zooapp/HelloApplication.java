@@ -62,6 +62,7 @@ public class HelloApplication extends Application
         MenuItem animalMenuItem = new MenuItem("Animal");
         MenuItem foodMenuItem = new MenuItem("Food");
         MenuItem feedingMenuItem = new MenuItem("Feeding");
+        MenuItem employeeMenuItem = new MenuItem("Employee");
 
         // Create event handlers for menu items
         animalMenuItem.setOnAction(event -> {
@@ -73,15 +74,19 @@ public class HelloApplication extends Application
         feedingMenuItem.setOnAction(event -> {
             primaryStage.setScene(new Scene(new FeedingApplication().createContent(primaryStage)));
         });
+        employeeMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new EmployeeApplication().createContent(primaryStage)));
+        });
 
         // Create menus and add menu items to them
         Menu animalMenu = new Menu("Animal", null, animalMenuItem);
         Menu foodMenu = new Menu("Food", null, foodMenuItem);
         Menu feedingMenu = new Menu("Feeding", null, feedingMenuItem);
+        Menu employeeMenu = new Menu("Employee", null, employeeMenuItem);
 
         // Create menu bar and add menus to it
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu);
+        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu, employeeMenu);
 
 
         //Animal Information
