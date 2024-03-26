@@ -44,6 +44,8 @@ public class HelloApplication extends Application
     }
 
     public Parent createContent(Stage primaryStage){
+        LoginApplication login = new LoginApplication();
+
         //Change page title
         primaryStage.setTitle("Animal Page");
 
@@ -119,6 +121,9 @@ public class HelloApplication extends Application
         // Create delete button
         Button deleteButton = new Button("    Delete Animal    ");
         pane.add(deleteButton, 4, 1);
+
+        //Show Delete button when Manager logged
+        deleteButton.setDisable((login.getUserType().equals("Manager") ? false : true));
         deleteButton.setOnAction(event ->
         {
             deleteClicked();
@@ -144,10 +149,10 @@ public class HelloApplication extends Application
         mainpane.add(DisplayArea, 0, 3);
         DisplayArea.setPrefHeight(150);
 
-
         // Create main pane
-        Label boldLabel1 = new Label("   Animal Information:");
+        Label boldLabel1 = new Label("   Animal Information:                                                                                      " +"Logged as: " + login.getUserName());
         boldLabel1.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+
         mainpane.add(menuBar, 0, 0);
         mainpane.add(boldLabel1, 0, 1);
         mainpane.add(pane, 0, 2);
@@ -528,8 +533,6 @@ public class HelloApplication extends Application
 
         return true;
     }
-
-
 
 
     public static void main(String[] args)
