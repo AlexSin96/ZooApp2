@@ -44,6 +44,8 @@ public class FeedingApplication extends Application{
     }
 
     public Parent createContent(Stage primaryStage){
+        LoginApplication login = new LoginApplication();
+
         //Change page title
         primaryStage.setTitle("Feeding Page");
 
@@ -126,6 +128,9 @@ public class FeedingApplication extends Application{
         // Create delete button
         Button deleteButton = new Button("    Delete Feeding    ");
         pane.add(deleteButton, 4, 1);
+
+        //Shows delete Button when logged as Manager
+        deleteButton.setDisable((login.getUserType().equals("Manager") ? false : true));
         deleteButton.setOnAction(event ->
         {
             deleteClicked();
@@ -133,6 +138,9 @@ public class FeedingApplication extends Application{
 
         Button createButton = new Button("     Create Feeding     ");
         pane.add(createButton, 3, 8);
+
+        //Show create button when logged as Employee
+        createButton.setDisable((login.getUserType().equals("Employee") ? false : true));
         createButton.setOnAction(event ->
         {
             createClicked();
@@ -140,6 +148,9 @@ public class FeedingApplication extends Application{
 
         Button displayButton = new Button("Display All Feedings");
         pane.add(displayButton, 4, 8);
+
+        //Shows display button when logged as Manager
+        displayButton.setDisable((login.getUserType().equals("Manager") ? false : true));
         displayButton.setOnAction(event ->
         {
             displayClicked();
@@ -151,10 +162,10 @@ public class FeedingApplication extends Application{
         mainpane.add(DisplayArea, 0, 3);
         DisplayArea.setPrefHeight(150);
 
-
         // Create main pane
-        Label boldLabel1 = new Label("   Feeding Information:");
+        Label boldLabel1 = new Label("   Feeding Information:                                                                                                " +"Logged as: " + login.getUserName());
         boldLabel1.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+
         mainpane.add(menuBar, 0, 0);
         mainpane.add(boldLabel1, 0, 1);
         mainpane.add(pane, 0, 2);
