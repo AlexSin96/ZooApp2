@@ -158,6 +158,9 @@ public class FeedingApplication extends Application{
 
         Button displayButton = new Button("Display All Feedings");
         pane.add(displayButton, 4, 8);
+
+        //Shows display button when logged as Manager
+        displayButton.setDisable((login.getUserType().equals("Manager") ? false : true));
         displayButton.setOnAction(event ->
         {
             displayClicked();
