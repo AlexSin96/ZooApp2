@@ -44,6 +44,8 @@ public class HelloApplication extends Application
     }
 
     public Parent createContent(Stage primaryStage){
+        LoginApplication login = new LoginApplication();
+
         //Change page title
         primaryStage.setTitle("Animal Page");
 
@@ -62,6 +64,8 @@ public class HelloApplication extends Application
         MenuItem animalMenuItem = new MenuItem("Animal");
         MenuItem foodMenuItem = new MenuItem("Food");
         MenuItem feedingMenuItem = new MenuItem("Feeding");
+        MenuItem employeeMenuItem = new MenuItem("Users");
+        MenuItem analyticsMenuItem = new MenuItem("Analytics");
 
         // Create event handlers for menu items
         animalMenuItem.setOnAction(event -> {
@@ -73,15 +77,23 @@ public class HelloApplication extends Application
         feedingMenuItem.setOnAction(event -> {
             primaryStage.setScene(new Scene(new FeedingApplication().createContent(primaryStage)));
         });
+        employeeMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new EmployeeApplication().createContent(primaryStage)));
+        });
+        analyticsMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new AnalyticsApplication().createContent(primaryStage)));
+        });
 
         // Create menus and add menu items to them
         Menu animalMenu = new Menu("Animal", null, animalMenuItem);
         Menu foodMenu = new Menu("Food", null, foodMenuItem);
         Menu feedingMenu = new Menu("Feeding", null, feedingMenuItem);
+        Menu employeeMenu = new Menu("Users", null, employeeMenuItem);
+        Menu analyticsMenu = new Menu("Analytics", null, analyticsMenuItem);
 
         // Create menu bar and add menus to it
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu);
+        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu, employeeMenu, analyticsMenu);
 
 
         //Animal Information
@@ -111,6 +123,8 @@ public class HelloApplication extends Application
         // Create update button
         Button updateButton = new Button("    Update Animal    ");
         pane.add(updateButton, 4, 0);
+
+        updateButton.setDisable((login.getUserType().equals("Manager") ? false : true));
         updateButton.setOnAction(event ->
         {
             updateClicked();
@@ -119,6 +133,9 @@ public class HelloApplication extends Application
         // Create delete button
         Button deleteButton = new Button("    Delete Animal    ");
         pane.add(deleteButton, 4, 1);
+
+        //Show Delete button when Manager logged
+        deleteButton.setDisable((login.getUserType().equals("Manager") ? false : true));
         deleteButton.setOnAction(event ->
         {
             deleteClicked();
@@ -126,6 +143,8 @@ public class HelloApplication extends Application
 
         Button createButton = new Button("     Create Animal     ");
         pane.add(createButton, 3, 8);
+
+        createButton.setDisable((login.getUserType().equals("Manager") ? false : true));
         createButton.setOnAction(event ->
         {
             createClicked();
@@ -144,10 +163,10 @@ public class HelloApplication extends Application
         mainpane.add(DisplayArea, 0, 3);
         DisplayArea.setPrefHeight(150);
 
-
         // Create main pane
-        Label boldLabel1 = new Label("   Animal Information:");
+        Label boldLabel1 = new Label("   Animal Information:                                                                                      " +"Logged as: " + login.getUserName());
         boldLabel1.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+
         mainpane.add(menuBar, 0, 0);
         mainpane.add(boldLabel1, 0, 1);
         mainpane.add(pane, 0, 2);
@@ -528,8 +547,6 @@ public class HelloApplication extends Application
 
         return true;
     }
-
-
 
 
     public static void main(String[] args)

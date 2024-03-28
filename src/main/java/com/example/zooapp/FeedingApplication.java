@@ -44,6 +44,8 @@ public class FeedingApplication extends Application{
     }
 
     public Parent createContent(Stage primaryStage){
+        LoginApplication login = new LoginApplication();
+
         //Change page title
         primaryStage.setTitle("Feeding Page");
 
@@ -62,6 +64,8 @@ public class FeedingApplication extends Application{
         MenuItem animalMenuItem = new MenuItem("Animal");
         MenuItem foodMenuItem = new MenuItem("Food");
         MenuItem feedingMenuItem = new MenuItem("Feeding");
+        MenuItem employeeMenuItem = new MenuItem("Users");
+        MenuItem analyticsMenuItem = new MenuItem("Analytics");
 
         // Create event handlers for menu items
         animalMenuItem.setOnAction(event -> {
@@ -73,15 +77,23 @@ public class FeedingApplication extends Application{
         feedingMenuItem.setOnAction(event -> {
             primaryStage.setScene(new Scene(new FeedingApplication().createContent(primaryStage)));
         });
+        employeeMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new EmployeeApplication().createContent(primaryStage)));
+        });
+        analyticsMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new AnalyticsApplication().createContent(primaryStage)));
+        });
 
         // Create menus and add menu items to them
         Menu animalMenu = new Menu("Animal", null, animalMenuItem);
         Menu foodMenu = new Menu("Food", null, foodMenuItem);
         Menu feedingMenu = new Menu("Feeding", null, feedingMenuItem);
+        Menu employeeMenu = new Menu("Users", null, employeeMenuItem);
+        Menu analyticsMenu = new Menu("Analytics", null, analyticsMenuItem);
 
         // Create menu bar and add menus to it
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu);
+        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu, employeeMenu, analyticsMenu);
 
 
         //Feeding Information
@@ -126,6 +138,9 @@ public class FeedingApplication extends Application{
         // Create delete button
         Button deleteButton = new Button("    Delete Feeding    ");
         pane.add(deleteButton, 4, 1);
+
+        //Shows delete Button when logged as Manager
+        deleteButton.setDisable((login.getUserType().equals("Manager") ? false : true));
         deleteButton.setOnAction(event ->
         {
             deleteClicked();
@@ -133,6 +148,9 @@ public class FeedingApplication extends Application{
 
         Button createButton = new Button("     Create Feeding     ");
         pane.add(createButton, 3, 8);
+
+        //Show create button when logged as Employee
+        createButton.setDisable((login.getUserType().equals("Employee") ? false : true));
         createButton.setOnAction(event ->
         {
             createClicked();
@@ -151,10 +169,10 @@ public class FeedingApplication extends Application{
         mainpane.add(DisplayArea, 0, 3);
         DisplayArea.setPrefHeight(150);
 
-
         // Create main pane
-        Label boldLabel1 = new Label("   Feeding Information:");
+        Label boldLabel1 = new Label("   Feeding Information:                                                                                                " +"Logged as: " + login.getUserName());
         boldLabel1.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+
         mainpane.add(menuBar, 0, 0);
         mainpane.add(boldLabel1, 0, 1);
         mainpane.add(pane, 0, 2);
@@ -202,7 +220,7 @@ public class FeedingApplication extends Application{
                             "JOIN users b ON a.user_id = b.user_id " +
                             "JOIN animals c ON a.animal_id = c.animal_id " +
                             "JOIN food d ON a.food_id = d.food_id ORDER BY a.feeding_id"
-                    );
+            );
 
 
             // Create a DefaultTableModel to hold the query result
