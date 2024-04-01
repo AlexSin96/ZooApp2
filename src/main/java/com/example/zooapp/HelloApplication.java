@@ -64,7 +64,8 @@ public class HelloApplication extends Application
         MenuItem animalMenuItem = new MenuItem("Animal");
         MenuItem foodMenuItem = new MenuItem("Food");
         MenuItem feedingMenuItem = new MenuItem("Feeding");
-        MenuItem employeeMenuItem = new MenuItem("Employee");
+        MenuItem employeeMenuItem = new MenuItem("Users");
+        MenuItem analyticsMenuItem = new MenuItem("Analytics");
 
         // Create event handlers for menu items
         animalMenuItem.setOnAction(event -> {
@@ -79,16 +80,20 @@ public class HelloApplication extends Application
         employeeMenuItem.setOnAction(event -> {
             primaryStage.setScene(new Scene(new EmployeeApplication().createContent(primaryStage)));
         });
+        analyticsMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new AnalyticsApplication().createContent(primaryStage)));
+        });
 
         // Create menus and add menu items to them
         Menu animalMenu = new Menu("Animal", null, animalMenuItem);
         Menu foodMenu = new Menu("Food", null, foodMenuItem);
         Menu feedingMenu = new Menu("Feeding", null, feedingMenuItem);
-        Menu employeeMenu = new Menu("Employee", null, employeeMenuItem);
+        Menu employeeMenu = new Menu("Users", null, employeeMenuItem);
+        Menu analyticsMenu = new Menu("Analytics", null, analyticsMenuItem);
 
         // Create menu bar and add menus to it
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu, employeeMenu);
+        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu, employeeMenu, analyticsMenu);
 
 
         //Animal Information
@@ -118,6 +123,8 @@ public class HelloApplication extends Application
         // Create update button
         Button updateButton = new Button("    Update Animal    ");
         pane.add(updateButton, 4, 0);
+
+        updateButton.setDisable((login.getUserType().equals("Manager") ? false : true));
         updateButton.setOnAction(event ->
         {
             updateClicked();
@@ -136,6 +143,8 @@ public class HelloApplication extends Application
 
         Button createButton = new Button("     Create Animal     ");
         pane.add(createButton, 3, 8);
+
+        createButton.setDisable((login.getUserType().equals("Manager") ? false : true));
         createButton.setOnAction(event ->
         {
             createClicked();
@@ -169,7 +178,7 @@ public class HelloApplication extends Application
     public void displayClicked()
     {
         // Create a new JFrame for the resultTable
-        JFrame resultFrame = new JFrame("Query Result");
+        JFrame resultFrame = new JFrame("Display all Animals");
         resultFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Create the JTable
@@ -182,6 +191,7 @@ public class HelloApplication extends Application
         // Set size and make the frame visible
         resultFrame.setSize(840, 400);  // Adjust the size as needed
         resultFrame.setVisible(true);
+        resultFrame.setLocationRelativeTo(null); // Center the frame
 
         try
         {

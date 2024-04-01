@@ -21,8 +21,9 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
-public class UserApplication extends Application {
-    private TextField EmpName, EmpTitle, EmpId;
+public class EmployeeApplication extends Application {
+    private TextField Password, Name, Address, Birthday, Phone, UserId;
+    private ComboBox<String> typeComboBox;
     private TextArea DisplayArea;
     private JTable resultTable;
 
@@ -62,7 +63,8 @@ public class UserApplication extends Application {
         MenuItem animalMenuItem = new MenuItem("Animal");
         MenuItem foodMenuItem = new MenuItem("Food");
         MenuItem feedingMenuItem = new MenuItem("Feeding");
-        MenuItem userMenuItem = new MenuItem("User");
+        MenuItem employeeMenuItem = new MenuItem("Users");
+        MenuItem analyticsMenuItem = new MenuItem("Analytics");
 
         // Create event handlers for menu items
         animalMenuItem.setOnAction(event -> {
@@ -74,33 +76,51 @@ public class UserApplication extends Application {
         feedingMenuItem.setOnAction(event -> {
             primaryStage.setScene(new Scene(new FeedingApplication().createContent(primaryStage)));
         });
-        userMenuItem.setOnAction(event -> {
-            primaryStage.setScene(new Scene(new UserApplication().createContent(primaryStage)));
+        employeeMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new EmployeeApplication().createContent(primaryStage)));
+        });
+        analyticsMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new AnalyticsApplication().createContent(primaryStage)));
         });
 
         // Create menus and add menu items to them
         Menu animalMenu = new Menu("Animal", null, animalMenuItem);
         Menu foodMenu = new Menu("Food", null, foodMenuItem);
         Menu feedingMenu = new Menu("Feeding", null, feedingMenuItem);
-        Menu userMenu = new Menu("User", null, userMenuItem);
+        Menu employeeMenu = new Menu("Users", null, employeeMenuItem);
+        Menu analyticsMenu = new Menu("Analytics", null, analyticsMenuItem);
 
         // Create menu bar and add menus to it
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu, userMenu);
+        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu, employeeMenu, analyticsMenu);
 
+        //User Information
+        Name = new TextField();
+        Password = new TextField();
+        Birthday = new TextField();
+        Address = new TextField();
+        Phone = new TextField();
+        UserId = new TextField();
+        typeComboBox = new ComboBox<>();
 
-        //Food Information
-        EmpName = new TextField();
-        EmpTitle = new TextField();
-        EmpId = new TextField();
+        typeComboBox.getItems().addAll("Manager", "Employee");
+        typeComboBox.setValue("Manager"); // Set default selection to Manager
 
-        pane.add(new Label("Employee Name: "), 0, 0);
-        pane.add(EmpName, 1, 0);
-        pane.add(new Label("Title: "), 0, 1);
-        pane.add(EmpTitle, 1, 1);
+        pane.add(new Label("Name: "), 0, 0);
+        pane.add(Name, 1, 0);
+        pane.add(new Label("Password: "), 0, 1);
+        pane.add(Password, 1, 1);
+        pane.add(new Label("Birthday"), 0, 2);
+        pane.add(Birthday, 1, 2);
+        pane.add(new Label("Address"), 0, 3);
+        pane.add(Address, 1, 3);
+        pane.add(new Label("Phone"), 0, 4);
+        pane.add(Phone, 1, 4);
+        pane.add(new Label("Type: "), 0, 5);
+        pane.add(typeComboBox, 1, 5);
 
-        pane.add(new Label("Employee ID: "), 2, 0);
-        pane.add(EmpId, 3, 0);
+        pane.add(new Label("User ID: "), 2, 0);
+        pane.add(UserId, 3, 0);
 
         // Create update button
         Button updateButton = new Button("    Update User    ");
@@ -161,7 +181,7 @@ public class UserApplication extends Application {
     //Method for Display button
     public void displayClicked() {
         // Create a new JFrame for the resultTable
-        JFrame resultFrame = new JFrame("Query Result");
+        JFrame resultFrame = new JFrame("Displaying all employees");
         resultFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Create the JTable
@@ -174,6 +194,7 @@ public class UserApplication extends Application {
         // Set size and make the frame visible
         resultFrame.setSize(840, 400);  // Adjust the size as needed
         resultFrame.setVisible(true);
+        resultFrame.setLocationRelativeTo(null); // Center the frame
 
         try {
             System.out.println("> Start Program ...");
@@ -191,7 +212,7 @@ public class UserApplication extends Application {
 
             // Execute the SQL query
             ResultSet resultSet = statement.executeQuery(
-                    "SELECT * from user ORDER BY user_id");
+                    "SELECT * from users ORDER BY user_id");
 
             // Create a DefaultTableModel to hold the query result
             DefaultTableModel tableModel = new DefaultTableModel();
@@ -225,49 +246,365 @@ public class UserApplication extends Application {
     }
 
     // Method for Create button
-    public void createClicked() {
+    public void createClicked()
+    {
         DisplayArea.clear();
-        String name = EmpName.getText();
-        String empTitle = EmpTitle.getText();
 
         // Check if any text fields are empty
-        if (EmpName.getText().isEmpty() || EmpTitle.getText().isEmpty() )
-        {
+        if (Name.getText().isEmpty() || Password.getText().isEmpty() ||
+                Birthday.getText().isEmpty() || Address.getText().isEmpty() || Phone.getText().isEmpty()) {
+
             DisplayArea.appendText("Error: All fields must be filled.\n");
             return; // Stop processing if any field is empty
         }
 
-        // Check if quantity is a valid integer
-//        try
-//        {
-//            int IdValue = Integer.parseInt(quantity);
-//        }
-//        catch (NumberFormatException e)
-//        {
-//            // Handle the case where quantity is not a valid integer
-//            DisplayArea.appendText("Quantity must be valid integer.\n");
-//        }
-//
-//        int quantityValue = Integer.parseInt(quantity);
+        // Check if birthdate is valid format
+        if (!isValidDateFormat(Birthday.getText())) {
+            // Handle the case where birthday is not valid format
+            DisplayArea.appendText("Error: Birthday must be in the YYYY-MM-DD format.\n");
+            return; // Stop processing if any field is empty
+        }
 
-        //SQL query to add record
+
+        String name = Name.getText();
+        String pass = Password.getText();
+        String birthday = Birthday.getText();
+        String address = Address.getText();
+        String phone = Phone.getText();
+        String type = typeComboBox.getValue();
+
+
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             connection.setAutoCommit(false); // Start transaction
 
-//            // Insert into Food table
-//            String playerQuery = "INSERT INTO FOOD VALUES(Food_Seq.NEXTVAL, ?, ?)";
-//            try (PreparedStatement foodStatement = connection.prepareStatement(playerQuery)) {
-//                foodStatement.setString(1, name);
-//                foodStatement.setInt(2, quantityValue);
-//                foodStatement.executeUpdate();
-//            }
+            // Insert into Animal table
+            String playerQuery = "INSERT INTO users VALUES(Worker_Seq.NEXTVAL, ?, ?, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'))";
+            try (PreparedStatement animalStatement = connection.prepareStatement(playerQuery)) {
+                animalStatement.setString(1, pass);
+                animalStatement.setString(2, type);
+                animalStatement.setString(3, name);
+                animalStatement.setString(4, address);
+                animalStatement.setString(5, phone);
+                animalStatement.setString(6, birthday);
+                animalStatement.executeUpdate();
+            }
 
             // Commit the transaction
             connection.commit();
 
             DisplayArea.appendText("New user record created successfully.");
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             DisplayArea.appendText("Error creating new record: " + e.getMessage());
+        }
+    }
+
+    private void deleteClicked()
+    {
+        DisplayArea.clear();
+
+        // Validate ID
+        boolean testId = isValidId(UserId.getText());
+
+        if(testId)
+        {
+            String userId = UserId.getText();
+            int userIdValue = Integer.parseInt(userId);
+            DisplayArea.appendText("Selected user id for deletion is: " + userIdValue + "\n");
+
+            // Check if the food ID exists in the player table
+            try (Connection connection = DriverManager.getConnection(url, user, password))
+            {
+                connection.setAutoCommit(false);
+                String selectQuery = "SELECT COUNT(*) FROM users WHERE user_id = ?";
+                PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
+                selectStatement.setInt(1, userIdValue);
+                ResultSet resultSet = selectStatement.executeQuery();
+                resultSet.next();
+                int rowCount = resultSet.getInt(1);
+
+                if (rowCount == 0)
+                {
+                    DisplayArea.appendText("User Id does not exists.\n");
+                }
+                else
+                {
+                    DisplayArea.appendText("User Id exists. \n");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace(); // Handle the exception appropriately
+                DisplayArea.appendText("SQL Exception: " + e.getMessage() + "\n");
+            }
+
+            //Delete the food record
+            try (Connection connection = DriverManager.getConnection(url, user, password))
+            {
+                String updateQuery = "DELETE FROM users WHERE user_id = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                    preparedStatement.setInt(1, userIdValue);
+
+                    int rowsUpdated = preparedStatement.executeUpdate();
+
+                    if (rowsUpdated > 0) {
+                        DisplayArea.appendText("User deletion successful.\n");
+                    } else {
+                        DisplayArea.appendText("User deletion unsuccessful.\n");
+                    }
+                }
+
+                // Commit the transaction
+                connection.commit();
+
+            } catch (SQLException e) {
+                e.printStackTrace(); // Handle the exception appropriately
+            }
+
+        }
+
+    }
+
+    // Method for Update button
+    private void updateClicked()
+    {
+        DisplayArea.clear();
+
+        // Validate ID
+        boolean testId = isValidId(UserId.getText());
+
+        if(testId)
+        {
+            String userId = UserId.getText();
+            int userIdValue = Integer.parseInt(userId);
+            DisplayArea.appendText("Selected User id for update is: " + userIdValue + "\n");
+
+            // Check if the user ID exists in the users table
+            try (Connection connection = DriverManager.getConnection(url, user, password))
+            {
+                connection.setAutoCommit(false);
+                String selectQuery = "SELECT COUNT(*) FROM users WHERE user_id = ?";
+                PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
+                selectStatement.setInt(1, userIdValue);
+                ResultSet resultSet = selectStatement.executeQuery();
+                resultSet.next();
+                int rowCount = resultSet.getInt(1);
+
+                if (rowCount == 0)
+                {
+                    DisplayArea.appendText("User Id does not exists.\n");
+                }
+                else
+                {
+                    DisplayArea.appendText("User Id exists. \n");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace(); // Handle the exception appropriately
+                DisplayArea.appendText("SQL Exception: " + e.getMessage() + "\n");
+            }
+
+            //Update query for Password
+            String pass = Password.getText();
+            if (!pass.isEmpty())
+            {
+                try (Connection connection = DriverManager.getConnection(url, user, password))
+                {
+                    String updateQuery = "UPDATE users SET password_hash = ? WHERE user_id = ?";
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                        preparedStatement.setString(1, pass);
+                        preparedStatement.setInt(2, userIdValue);
+
+                        int rowsUpdated = preparedStatement.executeUpdate();
+
+                        if (rowsUpdated > 0) {
+                            DisplayArea.appendText("User password update successful.\n");
+                        } else {
+                            DisplayArea.appendText("User password update unsuccessful.\n");
+                        }
+                    }
+
+                    // Commit the transaction
+                    connection.commit();
+
+                } catch (SQLException e) {
+                    e.printStackTrace(); // Handle the exception appropriately
+                }
+            }
+
+            //Update query for Type
+            String type = typeComboBox.getValue();
+
+            //Get old values for type
+            String oldType = "";
+
+            try (Connection connection = DriverManager.getConnection(url, user, password)) {
+                // SQL query to retrieve user_type
+                String query = "SELECT user_type FROM users WHERE user_id = ?";
+
+                try (PreparedStatement statement = connection.prepareStatement(query)) {
+                    // Set the feedingIdValue as a parameter in the query
+                    statement.setInt(1, userIdValue);
+
+                    // Execute the query and retrieve the results
+                    ResultSet resultSet = statement.executeQuery();
+
+                    // Process the result set
+                    if (resultSet.next()) {
+                        oldType = resultSet.getString("user_type");
+                    } else {
+                        System.out.println("No record found for User ID: " + userIdValue);
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            if (!type.equals(oldType))
+            {
+                try (Connection connection = DriverManager.getConnection(url, user, password))
+                {
+                    String updateQuery = "UPDATE users SET user_type = ? WHERE user_id = ?";
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                        preparedStatement.setString(1, type);
+                        preparedStatement.setInt(2, userIdValue);
+
+                        int rowsUpdated = preparedStatement.executeUpdate();
+
+                        if (rowsUpdated > 0) {
+                            DisplayArea.appendText("User type update successful.\n");
+                        } else {
+                            DisplayArea.appendText("User type update unsuccessful.\n");
+                        }
+                    }
+
+                    // Commit the transaction
+                    connection.commit();
+
+                } catch (SQLException e) {
+                    e.printStackTrace(); // Handle the exception appropriately
+                }
+            }
+
+            //Update query for Name
+            String name = Name.getText();
+            if (!name.isEmpty())
+            {
+                try (Connection connection = DriverManager.getConnection(url, user, password))
+                {
+                    String updateQuery = "UPDATE users SET user_name = ? WHERE user_id = ?";
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                        preparedStatement.setString(1, name);
+                        preparedStatement.setInt(2, userIdValue);
+
+                        int rowsUpdated = preparedStatement.executeUpdate();
+
+                        if (rowsUpdated > 0) {
+                            DisplayArea.appendText("User name update successful.\n");
+                        } else {
+                            DisplayArea.appendText("User name update unsuccessful.\n");
+                        }
+                    }
+
+                    // Commit the transaction
+                    connection.commit();
+
+                } catch (SQLException e) {
+                    e.printStackTrace(); // Handle the exception appropriately
+                }
+            }
+
+            //Update query for Address
+            String address = Address.getText();
+            if (!address.isEmpty())
+            {
+                try (Connection connection = DriverManager.getConnection(url, user, password))
+                {
+                    String updateQuery = "UPDATE users SET user_address = ? WHERE user_id = ?";
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                        preparedStatement.setString(1, address);
+                        preparedStatement.setInt(2, userIdValue);
+
+                        int rowsUpdated = preparedStatement.executeUpdate();
+
+                        if (rowsUpdated > 0) {
+                            DisplayArea.appendText("User address update successful.\n");
+                        } else {
+                            DisplayArea.appendText("User address update unsuccessful.\n");
+                        }
+                    }
+
+                    // Commit the transaction
+                    connection.commit();
+
+                } catch (SQLException e) {
+                    e.printStackTrace(); // Handle the exception appropriately
+                }
+            }
+
+            //Update query for Phone
+            String phone = Phone.getText();
+            if (!phone.isEmpty())
+            {
+                try (Connection connection = DriverManager.getConnection(url, user, password))
+                {
+                    String updateQuery = "UPDATE users SET user_phone = ? WHERE user_id = ?";
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                        preparedStatement.setString(1, phone);
+                        preparedStatement.setInt(2, userIdValue);
+
+                        int rowsUpdated = preparedStatement.executeUpdate();
+
+                        if (rowsUpdated > 0) {
+                            DisplayArea.appendText("User phone update successful.\n");
+                        } else {
+                            DisplayArea.appendText("User phone update unsuccessful.\n");
+                        }
+                    }
+
+                    // Commit the transaction
+                    connection.commit();
+
+                } catch (SQLException e) {
+                    e.printStackTrace(); // Handle the exception appropriately
+                }
+            }
+
+            //Update query for Birthdate
+            String birthdate = Birthday.getText();
+            if (!birthdate.isEmpty())
+            {
+                // Check if date is in the YYYY-MM-DD format
+                if (!isValidDateFormat(birthdate))
+                {
+                    DisplayArea.appendText("Error: Birthdate must be in the YYYY-MM-DD format.\n");
+                    return; // Stop processing if date format is invalid
+                }
+
+                try (Connection connection = DriverManager.getConnection(url, user, password))
+                {
+                    String updateQuery = "UPDATE users SET user_birthdate = TO_DATE(?, 'YYYY-MM-DD') WHERE user_id = ?";
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                        preparedStatement.setString(1, birthdate);
+                        preparedStatement.setInt(2, userIdValue);
+
+                        int rowsUpdated = preparedStatement.executeUpdate();
+
+                        if (rowsUpdated > 0) {
+                            DisplayArea.appendText("User birthdate update successful.\n");
+                        } else {
+                            DisplayArea.appendText("User birthdate update unsuccessful.\n");
+                        }
+                    }
+
+                    // Commit the transaction
+                    connection.commit();
+
+                } catch (SQLException e) {
+                    e.printStackTrace(); // Handle the exception appropriately
+                }
+            }
+
         }
     }
 
@@ -298,170 +635,6 @@ public class UserApplication extends Application {
         }
 
         return true;
-    }
-
-    private void deleteClicked()
-    {
-        DisplayArea.clear();
-
-        // Validate ID
-        boolean testId = isValidId(EmpId.getText());
-
-        if(testId)
-        {
-            String userId = EmpId.getText();
-            int userIdValue = Integer.parseInt(userId);
-            DisplayArea.appendText("Selected user id for deletion is: " + userIdValue + "\n");
-
-            // Check if the food ID exists in the player table
-            try (Connection connection = DriverManager.getConnection(url, user, password))
-            {
-                connection.setAutoCommit(false);
-                String selectQuery = "SELECT COUNT(*) FROM user WHERE user_id = ?";
-                PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
-                selectStatement.setInt(1, userIdValue);
-                ResultSet resultSet = selectStatement.executeQuery();
-                resultSet.next();
-                int rowCount = resultSet.getInt(1);
-
-                if (rowCount == 0)
-                {
-                    DisplayArea.appendText("User Id does not exists.\n");
-                }
-                else
-                {
-                    DisplayArea.appendText("User Id exists. \n");
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace(); // Handle the exception appropriately
-                DisplayArea.appendText("SQL Exception: " + e.getMessage() + "\n");
-            }
-
-            //Delete the food record
-            try (Connection connection = DriverManager.getConnection(url, user, password))
-            {
-                String updateQuery = "DELETE FROM user WHERE user_id = ?";
-                try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
-                    preparedStatement.setInt(1, userIdValue);
-
-                    int rowsUpdated = preparedStatement.executeUpdate();
-
-                    if (rowsUpdated > 0) {
-                        DisplayArea.appendText("User deletion successful.\n");
-                    } else {
-                        DisplayArea.appendText("User deletion unsuccessful.\n");
-                    }
-                }
-
-                // Commit the transaction
-                connection.commit();
-
-            } catch (SQLException e) {
-                e.printStackTrace(); // Handle the exception appropriately
-            }
-
-        }
-
-    }
-
-    // Method for Update button
-    private void updateClicked()
-    {
-        DisplayArea.clear();
-
-        // Validate ID
-        boolean testId = isValidId(EmpId.getText());
-
-        if(testId)
-        {
-            String foodId = EmpId.getText();
-            int foodIdValue = Integer.parseInt(foodId);
-            DisplayArea.appendText("Selected User id for update is: " + foodIdValue + "\n");
-
-            // Check if the food ID exists in the player table
-            try (Connection connection = DriverManager.getConnection(url, user, password))
-            {
-                connection.setAutoCommit(false);
-                String selectQuery = "SELECT COUNT(*) FROM user WHERE user_id = ?";
-                PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
-                selectStatement.setInt(1, foodIdValue);
-                ResultSet resultSet = selectStatement.executeQuery();
-                resultSet.next();
-                int rowCount = resultSet.getInt(1);
-
-                if (rowCount == 0)
-                {
-                    DisplayArea.appendText("User Id does not exists.\n");
-                }
-                else
-                {
-                    DisplayArea.appendText("User Id exists. \n");
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace(); // Handle the exception appropriately
-                DisplayArea.appendText("SQL Exception: " + e.getMessage() + "\n");
-            }
-
-            //Update query for Name
-            String name = EmpName.getText();
-            if (!name.isEmpty())
-            {
-                try (Connection connection = DriverManager.getConnection(url, user, password))
-                {
-                    String updateQuery = "UPDATE food SET user_name = ? WHERE user_id = ?";
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
-                        preparedStatement.setString(1, name);
-                        preparedStatement.setInt(2, foodIdValue);
-
-                        int rowsUpdated = preparedStatement.executeUpdate();
-
-                        if (rowsUpdated > 0) {
-                            DisplayArea.appendText("User name update successful.\n");
-                        } else {
-                            DisplayArea.appendText("User name update unsuccessful.\n");
-                        }
-                    }
-
-                    // Commit the transaction
-                    connection.commit();
-
-                } catch (SQLException e) {
-                    e.printStackTrace(); // Handle the exception appropriately
-                }
-            }
-
-            //Update query for Quantity
-            String empTitle = EmpTitle.getText();
-            if (!empTitle.isEmpty())
-            {
-
-                try (Connection connection = DriverManager.getConnection(url, user, password))
-                {
-                    String updateQuery = "UPDATE user SET user_type = ? WHERE user_id = ?";
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
-                        preparedStatement.setString(1, empTitle);
-                        preparedStatement.setString(2, empTitle);
-
-                        int rowsUpdated = preparedStatement.executeUpdate();
-
-                        if (rowsUpdated > 0) {
-                            DisplayArea.appendText("User update successful.\n");
-                        } else {
-                            DisplayArea.appendText("User update unsuccessful.\n");
-                        }
-                    }
-
-                    // Commit the transaction
-                    connection.commit();
-
-                } catch (SQLException e) {
-                    e.printStackTrace(); // Handle the exception appropriately
-                }
-            }
-
-        }
     }
 
     public static void main(String[] args) {

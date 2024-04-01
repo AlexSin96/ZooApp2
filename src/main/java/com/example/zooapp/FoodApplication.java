@@ -62,6 +62,8 @@ public class FoodApplication extends Application {
         MenuItem animalMenuItem = new MenuItem("Animal");
         MenuItem foodMenuItem = new MenuItem("Food");
         MenuItem feedingMenuItem = new MenuItem("Feeding");
+        MenuItem employeeMenuItem = new MenuItem("Users");
+        MenuItem analyticsMenuItem = new MenuItem("Analytics");
 
         // Create event handlers for menu items
         animalMenuItem.setOnAction(event -> {
@@ -73,15 +75,23 @@ public class FoodApplication extends Application {
         feedingMenuItem.setOnAction(event -> {
             primaryStage.setScene(new Scene(new FeedingApplication().createContent(primaryStage)));
         });
+        employeeMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new EmployeeApplication().createContent(primaryStage)));
+        });
+        analyticsMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new AnalyticsApplication().createContent(primaryStage)));
+        });
 
         // Create menus and add menu items to them
         Menu animalMenu = new Menu("Animal", null, animalMenuItem);
         Menu foodMenu = new Menu("Food", null, foodMenuItem);
         Menu feedingMenu = new Menu("Feeding", null, feedingMenuItem);
+        Menu employeeMenu = new Menu("Users", null, employeeMenuItem);
+        Menu analyticsMenu = new Menu("Analytics", null, analyticsMenuItem);
 
         // Create menu bar and add menus to it
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu);
+        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu, employeeMenu, analyticsMenu);
 
 
         //Food Information
@@ -155,7 +165,7 @@ public class FoodApplication extends Application {
     //Method for Display button
     public void displayClicked() {
         // Create a new JFrame for the resultTable
-        JFrame resultFrame = new JFrame("Query Result");
+        JFrame resultFrame = new JFrame("Display all Food");
         resultFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Create the JTable
@@ -168,6 +178,7 @@ public class FoodApplication extends Application {
         // Set size and make the frame visible
         resultFrame.setSize(840, 400);  // Adjust the size as needed
         resultFrame.setVisible(true);
+        resultFrame.setLocationRelativeTo(null); // Center the frame
 
         try {
             System.out.println("> Start Program ...");

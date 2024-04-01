@@ -36,7 +36,6 @@ public class LoginApplication extends Application
     public void start(Stage primaryStage) {
 
         //Create a scene  and place it in the stage
-
         primaryStage.setScene(new Scene(createContent(primaryStage)));
         primaryStage.show();
 
@@ -45,6 +44,7 @@ public class LoginApplication extends Application
     public Parent createContent(Stage primaryStage){
         //Change page title
         primaryStage.setTitle("Login Page");
+        primaryStage.centerOnScreen();//Center on screen
 
         //Create pane and set its properties
         GridPane mainpane= new GridPane();
@@ -66,51 +66,51 @@ public class LoginApplication extends Application
         pane.add(new Label("Password: "), 0, 1);
         pane.add(UserPassword, 1, 1);
 
-        // Create update button
+        // Create Login button
         Button loginButton = new Button("    Login    ");
         pane.add(loginButton, 4, 0);
         loginButton.setOnAction(event ->
         {
-            
+
             int rowCount = 0;
 
-                //Verify Credentials
-                rowCount = validateLoginCredentials();
-               if(rowCount == 0){
-                   if(gvLoginAttempts == 2)
-                   {
-                       loginButton.setDisable(true);
-                       //User doesn't exist
-                       Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                       alert.setTitle("Information Dialog");
-                       alert.setHeaderText(null);
-                       alert.setContentText("Too many attempts. Session Blocked. Contact your administrator!");
+            //Verify Credentials
+            rowCount = validateLoginCredentials();
+            if(rowCount == 0){
+                if(gvLoginAttempts == 2)
+                {
+                    loginButton.setDisable(true);
+                    //User doesn't exist
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Information Dialog");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Too many attempts. Session Blocked. Contact your administrator!");
 
-                       // Show the message box
-                       alert.showAndWait();
-                   }else {
-                       gvLoginAttempts += 1;
+                    // Show the message box
+                    alert.showAndWait();
+                }else {
+                    gvLoginAttempts += 1;
 
-                       //User doesn't exist
-                       Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                       alert.setTitle("Information Dialog");
-                       alert.setHeaderText(null);
-                       alert.setContentText("User does not exist. Try again!.");
+                    //User doesn't exist
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Information Dialog");
+                    alert.setHeaderText(null);
+                    alert.setContentText("User does not exist. Try again!.");
 
-                       // Show the message box
-                       alert.showAndWait();
-                   }
+                    // Show the message box
+                    alert.showAndWait();
                 }
-                else{
-                    //Granted Access
-                    primaryStage.setScene(new Scene(new HelloApplication().createContent(primaryStage)));
-                }
+            }
+            else{
+                //Granted Access
+                primaryStage.setScene(new Scene(new HelloApplication().createContent(primaryStage)));
+            }
         });
 
         // Create main pane
         Label boldLabel1 = new Label("   Zoo Management System    ");
         boldLabel1.setFont(Font.font("Arial", FontWeight.BOLD, 12));
-         mainpane.add(boldLabel1, 0, 1);
+        mainpane.add(boldLabel1, 0, 1);
         mainpane.add(pane, 0, 2);
 
         return mainpane;

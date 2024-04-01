@@ -64,6 +64,8 @@ public class FeedingApplication extends Application{
         MenuItem animalMenuItem = new MenuItem("Animal");
         MenuItem foodMenuItem = new MenuItem("Food");
         MenuItem feedingMenuItem = new MenuItem("Feeding");
+        MenuItem employeeMenuItem = new MenuItem("Users");
+        MenuItem analyticsMenuItem = new MenuItem("Analytics");
 
         // Create event handlers for menu items
         animalMenuItem.setOnAction(event -> {
@@ -75,15 +77,23 @@ public class FeedingApplication extends Application{
         feedingMenuItem.setOnAction(event -> {
             primaryStage.setScene(new Scene(new FeedingApplication().createContent(primaryStage)));
         });
+        employeeMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new EmployeeApplication().createContent(primaryStage)));
+        });
+        analyticsMenuItem.setOnAction(event -> {
+            primaryStage.setScene(new Scene(new AnalyticsApplication().createContent(primaryStage)));
+        });
 
         // Create menus and add menu items to them
         Menu animalMenu = new Menu("Animal", null, animalMenuItem);
         Menu foodMenu = new Menu("Food", null, foodMenuItem);
         Menu feedingMenu = new Menu("Feeding", null, feedingMenuItem);
+        Menu employeeMenu = new Menu("Users", null, employeeMenuItem);
+        Menu analyticsMenu = new Menu("Analytics", null, analyticsMenuItem);
 
         // Create menu bar and add menus to it
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu);
+        menuBar.getMenus().addAll(animalMenu, foodMenu, feedingMenu, employeeMenu, analyticsMenu);
 
 
         //Feeding Information
@@ -177,7 +187,7 @@ public class FeedingApplication extends Application{
     public void displayClicked()
     {
         // Create a new JFrame for the resultTable
-        JFrame resultFrame = new JFrame("Query Result");
+        JFrame resultFrame = new JFrame("Displaying all Feeding");
         resultFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Create the JTable
@@ -190,6 +200,7 @@ public class FeedingApplication extends Application{
         // Set size and make the frame visible
         resultFrame.setSize(840, 400);  // Adjust the size as needed
         resultFrame.setVisible(true);
+        resultFrame.setLocationRelativeTo(null); // Center the frame
 
         try
         {
@@ -213,7 +224,7 @@ public class FeedingApplication extends Application{
                             "JOIN users b ON a.user_id = b.user_id " +
                             "JOIN animals c ON a.animal_id = c.animal_id " +
                             "JOIN food d ON a.food_id = d.food_id ORDER BY a.feeding_id"
-                    );
+            );
 
 
             // Create a DefaultTableModel to hold the query result
