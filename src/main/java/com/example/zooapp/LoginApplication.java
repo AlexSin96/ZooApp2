@@ -36,7 +36,6 @@ public class LoginApplication extends Application
     public void start(Stage primaryStage) {
 
         //Create a scene  and place it in the stage
-
         primaryStage.setScene(new Scene(createContent(primaryStage)));
         primaryStage.show();
 
@@ -45,6 +44,7 @@ public class LoginApplication extends Application
     public Parent createContent(Stage primaryStage){
         //Change page title
         primaryStage.setTitle("Login Page");
+        primaryStage.centerOnScreen();//Center on screen
 
         //Create pane and set its properties
         GridPane mainpane= new GridPane();

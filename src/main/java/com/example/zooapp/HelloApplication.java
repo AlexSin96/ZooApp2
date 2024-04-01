@@ -178,7 +178,7 @@ public class HelloApplication extends Application
     public void displayClicked()
     {
         // Create a new JFrame for the resultTable
-        JFrame resultFrame = new JFrame("Query Result");
+        JFrame resultFrame = new JFrame("Display all Animals");
         resultFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Create the JTable
@@ -191,6 +191,7 @@ public class HelloApplication extends Application
         // Set size and make the frame visible
         resultFrame.setSize(840, 400);  // Adjust the size as needed
         resultFrame.setVisible(true);
+        resultFrame.setLocationRelativeTo(null); // Center the frame
 
         try
         {
